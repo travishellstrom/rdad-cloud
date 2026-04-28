@@ -5,7 +5,7 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "RDAD_DB"
 database_name = "rdad_cloud_db"
-database_id = "PLACEHOLDER_REPLACE_AFTER_CREATION"
+database_id = "4573c69e-ea18-4336-8940-14657537d052"
 
 [vars]
 SITE_URL = "https://cloud.rdad.org"
