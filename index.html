@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Runnin' Down a Dream Foundation - RDAD (Cloudflare Stack Demo)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400&display=swap" rel="stylesheet">
+  <meta name="description" content="The Runnin' Down a Dream Foundation - micro-grants of $5,000 for people inspired by Bill Gurley's book who need a boost to chase the career they were born for.">
+  <link rel="preload" as="image" href="/hero-bg-mobile.jpg" media="(max-width: 768px)">
+  <link rel="preload" as="image" href="/hero-bg.jpg" media="(min-width: 769px)">
+  <style>
+    :root {
+      --blue-dk:   #0A1628;
+      --blue-mid:  #1A3A5C;
+      --blue-lt:   #2A5A8C;
+      --gold:      #E8A020;
+      --gold-lt:   #F5C352;
+      --white:     #FFFFFF;
+      --snow:      #F8F7F4;
+      --text:      #111111;
+      --text-lt:   #555555;
+      --border:    #E0DED8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 300; background: var(--white); color: var(--text); }
+
+    /* ── DEMO BANNER ── */
+    #demo-banner {
+      background: #0A1628;
+      border-bottom: 2px solid var(--gold);
+      padding: 0.5rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      position: relative;
+    }
+    #demo-banner p {
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      line-height: 1.5;
+    }
+    #demo-banner .banner-tag {
+      background: var(--gold);
+      color: var(--blue-dk);
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.55rem;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    #demo-banner a { color: var(--gold); text-decoration: underline; }
+    #demo-banner-close {
+      position: absolute;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.4);
+      font-size: 1.1rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.25rem;
+    }
+    #demo-banner-close:hover { color: var(--white); }
+
+    /* ── NAV ── */
+    nav {
+      background: rgba(10,22,40,0.96); position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(8px); border-bottom: 1px solid rgba(232,160,32,0.3);
+    }
+    .nav-inner {
+      max-width: 1280px; margin: 0 auto; padding: 0 2rem;
+      height: 60px; display: flex; align-items: center; gap: 3rem; width: 100%;
+    }
+    .nav-eyebrow {
+      font-size: 0.95rem; font-weight: 800; letter-spacing: 0.08em;
+      text-transform: uppercase; color: rgba(255,255,255,0.92); margin-right: auto;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; text-decoration: none;
+    }
+    .nav-eyebrow:hover { color: var(--gold); }
+    .nav-links { display: flex; align-items: center; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.82rem; font-weight: 400; color: rgba(255,255,255,0.6);
+      text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+    .nav-dropdown { position: relative; }
+    .nav-dropdown > a { display: flex; align-items: center; gap: 0.3rem; }
+    .nav-dropdown > a::after { content: '▾'; font-size: 0.7rem; opacity: 0.6; }
+    .nav-dropdown > a::before {
+      content: ''; position: absolute; bottom: -12px; left: 0; width: 100%; height: 12px;
+    }
+    .dropdown-menu {
+      display: none; position: absolute; top: 100%; right: 0;
+      background: rgba(10,22,40,0.97); border: 1px solid rgba(232,160,32,0.25);
+      border-radius: 6px; min-width: 180px; padding: 0.75rem 0 0.5rem; margin-top: 0;
+      list-style: none; z-index: 200; backdrop-filter: blur(8px);
+    }
+    .dropdown-menu li a {
+      display: block; padding: 0.55rem 1.2rem; font-size: 0.8rem; letter-spacing: 0.06em;
+      text-transform: uppercase; color: rgba(255,255,255,0.7) !important; white-space: nowrap;
+    }
+    .dropdown-menu li a:hover { color: var(--gold) !important; background: rgba(232,160,32,0.08); }
+    .nav-dropdown:hover .dropdown-menu, .nav-dropdown:focus-within .dropdown-menu, .nav-dropdown.open .dropdown-menu { display: block; }
+    .nav-cta { color: var(--gold) !important; font-weight: 600 !important; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 92vh;
+      background:
+        linear-gradient(180deg, rgba(10,22,40,0.55) 0%, rgba(10,22,40,0.75) 60%, rgba(10,22,40,0.95) 100%),
+        url('/hero-bg.jpg') center top/cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5rem 2rem 4rem;
+    }
+    .hero-eyebrow {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--gold-lt); margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(3rem, 8vw, 6.5rem); font-weight: 900; line-height: 0.95;
+      letter-spacing: -0.02em; color: var(--white); text-transform: uppercase; margin-bottom: 1.75rem;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem); font-weight: 300; color: rgba(255,255,255,0.75);
+      max-width: 540px; margin: 0 auto 3rem; line-height: 1.7;
+    }
+    .hero-book { margin-bottom: 3rem; width: 160px; margin-left: auto; margin-right: auto; }
+    .hero-book img { width: 160px; border-radius: 4px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn-gold {
+      background: var(--gold); color: var(--blue-dk); padding: 1rem 2.25rem;
+      font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      text-decoration: none; border-radius: 3px; transition: background 0.2s, transform 0.15s; cursor: pointer; border: none; font-family: inherit;
+    }
+    .btn-gold:hover { background: var(--gold-lt); transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent; color: rgba(255,255,255,0.8); padding: 1rem 2.25rem;
+      font-size: 0.82rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+      text-decoration: none; border: 1.5px solid rgba(255,255,255,0.35); border-radius: 3px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-outline:hover { border-color: rgba(255,255,255,0.8); color: var(--white); }
+
+    /* ── SECTIONS ── */
+    .section-eyebrow {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1rem;
+    }
+    .section-inner { max-width: 960px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 3.5rem; }
+    .section-header h2 {
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem); font-weight: 700; letter-spacing: -0.02em;
+      color: var(--text); margin-bottom: 0.75rem;
+    }
+    .section-header p {
+      font-size: 1rem; font-weight: 300; color: var(--text-lt); max-width: 560px; margin: 0 auto; line-height: 1.75;
+    }
+
+    /* ── MISSION ── */
+    .mission { background: var(--snow); padding: 5rem 2rem; text-align: center; border-top: 3px solid var(--gold); }
+    .mission h2 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; letter-spacing: -0.02em;
+      line-height: 1.2; color: var(--text); max-width: 980px; margin: 0 auto 1.5rem;
+    }
+    .mission h2 em { font-style: italic; font-weight: 300; color: var(--blue-mid); }
+    .mission p {
+      font-size: 1.05rem; font-weight: 300; color: var(--text-lt); max-width: 760px;
+      margin: 0 auto 1.25rem; line-height: 1.85;
+    }
+
+    /* ── STATS ── */
+    .stats { background: var(--blue-dk); padding: 4rem 2rem; border-top: 3px solid var(--gold); border-bottom: 3px solid var(--gold); }
+    .stats-inner { max-width: 860px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; text-align: center; }
+    .stat-num { font-size: clamp(2.8rem, 5vw, 4.5rem); font-weight: 800; color: var(--gold); line-height: 1; margin-bottom: 0.5rem; }
+    .stat-label { font-size: 0.78rem; font-weight: 400; color: rgba(255,255,255,0.55); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* ── CRITERIA ── */
+    .grants {
+      background: linear-gradient(180deg, rgba(10,22,40,0.9) 0%, rgba(10,22,40,0.97) 100%), url('/hero-bg.jpg') center/cover no-repeat;
+      padding: 5rem 2rem;
+    }
+    .grants .section-header { text-align: center; margin-bottom: 3.5rem; }
+    .grants .section-header h2 { color: var(--white); }
+    .grants .section-header p { color: rgba(255,255,255,0.7); }
+    .grants .section-eyebrow { color: var(--gold-lt); }
+    .criteria-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+    .criteria-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-top: 3px solid var(--gold); border-radius: 6px; padding: 2rem; }
+    .criteria-card h3 { color: var(--white); font-size: 1rem; font-weight: 600; margin-bottom: 0.6rem; }
+    .criteria-card p { color: rgba(255,255,255,0.75); font-size: 0.85rem; font-weight: 300; line-height: 1.75; }
+    .criteria-num { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem; }
+
+    /* ── ASSESSMENT ── */
+    .assessment {
+      background: linear-gradient(180deg, rgba(10,22,40,0.9) 0%, rgba(10,22,40,0.97) 100%), url('/hero-bg.jpg') center/cover no-repeat;
+      padding: 5rem 2rem;
+    }
+    .assessment .section-header h2 { color: var(--white); }
+    .assessment .section-header p { color: rgba(255,255,255,0.55); }
+    .assessment-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-bottom: 3rem; }
+    .a-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 1.5rem; text-align: center;
+    }
+    .a-card-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.6rem; }
+    .a-card p { font-size: 0.82rem; font-weight: 300; color: rgba(255,255,255,0.5); line-height: 1.6; }
+    .assessment-cta { text-align: center; }
+    .assessment-cta p { margin-top: 1rem; font-size: 0.78rem; color: rgba(255,255,255,0.4); letter-spacing: 0.06em; }
+
+    /* ── BOOK ── */
+    .about-book { background: var(--snow); padding: 5rem 2rem; }
+    .book-split { max-width: 860px; margin: 0 auto; display: grid; grid-template-columns: 180px 1fr; gap: 3.5rem; align-items: center; }
+    .book-cover-wrap img { width: 100%; border-radius: 4px; box-shadow: 0 12px 40px rgba(0,0,0,0.15); }
+    .book-content .section-eyebrow { text-align: left; }
+    .book-content h2 { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 700; letter-spacing: -0.02em; color: var(--text); margin-bottom: 1rem; line-height: 1.2; }
+    .book-content p { font-size: 0.92rem; font-weight: 300; color: var(--text-lt); line-height: 1.85; margin-bottom: 1rem; }
+    .book-content a {
+      display: inline-block; background: var(--gold); color: var(--blue-dk); padding: 0.7rem 1.5rem;
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      text-decoration: none; border-radius: 3px; margin-top: 0.5rem; transition: background 0.2s;
+    }
+    .book-content a:hover { background: var(--gold-lt); }
+
+    /* ── FOOTER ── */
+    footer { background: #060f1a; padding: 2.5rem 2rem; text-align: center; }
+    footer p { font-size: 0.75rem; font-weight: 300; color: rgba(255,255,255,0.3); line-height: 1.7; }
+    footer a { color: rgba(255,255,255,0.4); text-decoration: none; }
+    footer a:hover { color: var(--white); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(6,15,26,0.92);
+      z-index: 1000; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #0D1E30; border: 1px solid rgba(232,160,32,0.25); border-radius: 10px;
+      width: 100%; max-width: 620px; padding: 2.5rem; position: relative;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    }
+    .modal-close {
+      position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none;
+      color: rgba(255,255,255,0.4); font-size: 1.4rem; cursor: pointer; line-height: 1; transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--white); }
+    .modal-progress { display: flex; gap: 6px; margin-bottom: 2rem; }
+    .modal-pip { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.1); transition: background 0.3s; }
+    .modal-pip.done { background: var(--gold); }
+    .modal-pip.active { background: var(--gold-lt); }
+    .modal-step { display: none; }
+    .modal-step.active { display: block; }
+    .modal-q-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem; }
+    .modal-q-text { font-size: 1.1rem; font-weight: 600; color: var(--white); line-height: 1.5; margin-bottom: 0.5rem; }
+    .modal-q-hint { font-size: 0.82rem; font-weight: 300; color: rgba(255,255,255,0.45); margin-bottom: 1.5rem; line-height: 1.6; }
+    .modal-input {
+      width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px; padding: 0.9rem 1rem; font-family: 'Poppins', sans-serif; font-size: 0.92rem;
+      font-weight: 300; color: rgba(255,255,255,0.9); outline: none; resize: vertical;
+      transition: border-color 0.2s; margin-bottom: 1.75rem;
+    }
+    .modal-input::placeholder { color: rgba(255,255,255,0.2); }
+    .modal-input:focus { border-color: var(--gold); }
+    .modal-nav { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+    .modal-back {
+      background: none; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.5);
+      padding: 0.75rem 1.5rem; font-family: 'Poppins', sans-serif; font-size: 0.82rem; font-weight: 400;
+      cursor: pointer; border-radius: 3px; transition: all 0.2s;
+    }
+    .modal-back:hover { border-color: rgba(255,255,255,0.5); color: var(--white); }
+    .modal-next {
+      background: var(--gold); color: var(--blue-dk); border: none; padding: 0.75rem 1.75rem;
+      font-family: 'Poppins', sans-serif; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.06em;
+      cursor: pointer; border-radius: 3px; transition: background 0.2s; margin-left: auto;
+    }
+    .modal-next:hover:not(:disabled) { background: var(--gold-lt); }
+    .modal-next:disabled { opacity: 0.6; cursor: not-allowed; }
+    .modal-step-counter { font-size: 0.75rem; color: rgba(255,255,255,0.3); letter-spacing: 0.08em; }
+    #modalSuccess { text-align: center; padding: 2rem 0; }
+    #modalSuccess h3 { font-size: 1.5rem; font-weight: 700; color: var(--gold); margin-bottom: 1rem; }
+    #modalSuccess p { font-size: 0.95rem; font-weight: 300; color: rgba(255,255,255,0.65); line-height: 1.75; }
+    #modalError { display:none; background: rgba(220,38,38,0.15); border: 1px solid rgba(220,38,38,0.3); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: #fca5a5; text-align: center; }
+
+    @media (max-width: 768px) {
+      .hero { background-image: linear-gradient(180deg, rgba(10,22,40,0.55) 0%, rgba(10,22,40,0.75) 60%, rgba(10,22,40,0.95) 100%), url('/hero-bg-mobile.jpg'); }
+      .criteria-grid { grid-template-columns: repeat(2,1fr); }
+      .assessment-cards { grid-template-columns: 1fr; }
+      .modal { padding: 2rem 1.5rem; }
+    }
+    @media (max-width: 640px) {
+      .nav-eyebrow { font-size: 0.72rem; letter-spacing: 0.04em; }
+      .criteria-grid { grid-template-columns: 1fr; }
+      .book-split { grid-template-columns: 1fr; }
+      .book-cover-wrap { max-width: 150px; margin: 0 auto; }
+      .stats-inner { grid-template-columns: 1fr; gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- DEMO BANNER -->
+<div id="demo-banner">
+  <p>
+    <span class="banner-tag">⚡ Demo</span>
+    &nbsp;&nbsp;This is <strong style="color:var(--gold);">cloud.rdad.org</strong> — Cloudflare Pages + D1 + Workers stack.
+    Compare with <a href="https://new.rdad.org" target="_blank" rel="noopener">new.rdad.org</a>
+  </p>
+  <button id="demo-banner-close" onclick="document.getElementById('demo-banner').style.display='none'" aria-label="Dismiss">×</button>
+</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-eyebrow">RUNNIN' DOWN A DREAM FOUNDATION</a>
+    <ul class="nav-links">
+      <li><a href="#mission">Mission</a></li>
+      <li><a href="#grants">Grants</a></li>
+      <li class="nav-dropdown" id="aboutBookDropdown">
+        <a href="/book.html" onclick="toggleDropdown(event, 'aboutBookDropdown')">About The Book</a>
+        <ul class="dropdown-menu">
+          <li><a href="/book.html">Book</a></li>
+          <li><a href="/graduation.html">For Grads</a></li>
+          <li><a href="/dreams.html">Dreams in Motion</a></li>
+        </ul>
+      </li>
+      <li class="nav-dropdown" id="aboutBillDropdown">
+        <a href="/bio.html" onclick="toggleDropdown(event, 'aboutBillDropdown')">About Bill</a>
+        <ul class="dropdown-menu">
+          <li><a href="/bio.html">Bio</a></li>
+          <li><a href="/media-room.html">Media Room</a></li>
+        </ul>
+      </li>
+      <li><a href="/contact.html">Contact</a></li>
+      <li><a href="#assessment" class="nav-cta">Apply</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">Bill Gurley &nbsp;·&nbsp; Micro-Grants for Dream Chasers</p>
+  <h1>Runnin' Down<br>a Dream</h1>
+  <p style="font-size:1.15rem;color:rgba(255,255,255,0.8);margin-bottom:1.5rem;font-style:italic;">Life is a use-it-or-lose-it proposition.<br><strong style="font-weight:400;">Shouldn't you spend it doing something you love?</strong></p>
+  <p class="hero-sub">Step off the conveyor belt.</p>
+  <div class="hero-book">
+    <img src="/runnin-down-a-dream-cover.jpg" alt="Runnin' Down a Dream - Bill Gurley" loading="lazy">
+  </div>
+  <div class="hero-actions">
+    <button class="btn-gold" onclick="openModal()">Take the Assessment</button>
+    <a href="https://amzn.to/4tXCLbe" target="_blank" rel="noopener" class="btn-outline">Get the Book →</a>
+  </div>
+</section>
+
+<!-- MISSION -->
+<section class="mission" id="mission">
+  <p class="section-eyebrow">Why We Exist</p>
+  <h2>Chasing your dream is hard enough.<br><em>It shouldn't be limited by financial means.</em></h2>
+  <p>The people who build extraordinary careers love the work so much they'd do it for free. But getting there sometimes requires more than passion — it often requires a financial bridge. This foundation exists to help build that bridge.</p>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-inner">
+    <div><div class="stat-num">$5K</div><div class="stat-label">Per recipient</div></div>
+    <div><div class="stat-num">Pilot</div><div class="stat-label">Year one</div></div>
+    <div><div class="stat-num">2026</div><div class="stat-label">First grants awarded</div></div>
+  </div>
+</div>
+
+<!-- PULL QUOTE -->
+<section style="background:linear-gradient(180deg,rgba(255,255,255,0.92) 0%,rgba(255,255,255,0.85) 50%,rgba(255,255,255,0.92) 100%),url('/bill-speaking.jpg') center 30%/cover no-repeat;padding:5rem 2rem;text-align:center;border-bottom:1px solid var(--border);">
+  <div style="max-width:1060px;margin:0 auto;">
+    <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem;">From the speech</p>
+    <blockquote style="font-family:'Poppins',sans-serif;font-size:clamp(1.4rem,3vw,2.2rem);font-weight:300;font-style:italic;line-height:1.55;color:var(--text);margin-bottom:1.5rem;">"The most successful people I know work incredibly hard. But they don't look like they're working — they look like they're playing. Because for them, there is no difference."</blockquote>
+    <p style="font-size:0.78rem;font-weight:500;color:var(--text-lt);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:1.5rem;">— Bill Gurley, UT McCombs School of Business, 2018</p>
+    <a href="https://www.youtube.com/watch?v=xmYekD6-PZ8" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:0.6rem;font-size:0.82rem;font-weight:600;color:var(--gold);text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;border-bottom:1.5px solid rgba(232,160,32,0.4);padding-bottom:2px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      Watch the Speech
+    </a>
+  </div>
+</section>
+
+<!-- GRANT CRITERIA -->
+<section class="grants" id="grants">
+  <div class="section-inner">
+    <div class="section-header">
+      <p class="section-eyebrow">Who We're Looking For</p>
+      <h2 style="color:var(--white);">The right candidate feels this in their bones</h2>
+      <p style="color:rgba(255,255,255,0.7);">We're not looking for the most polished application. We're looking for people who are already doing the work — with or without the money.</p>
+    </div>
+    <div class="criteria-grid">
+      <div class="criteria-card">
+        <div class="criteria-num">01</div>
+        <h3>You've read the book</h3>
+        <p>Not a prerequisite, but a strong signal. If the book described your life back to you, that's exactly who this is for.</p>
+      </div>
+      <div class="criteria-card">
+        <div class="criteria-num">02</div>
+        <h3>You're already doing the work</h3>
+        <p>Grants go to people who are showing up — not waiting for permission. What are you building or pursuing right now?</p>
+      </div>
+      <div class="criteria-card">
+        <div class="criteria-num">03</div>
+        <h3>A specific financial obstacle</h3>
+        <p>What does $5,000 actually unlock for you? The clearer your answer, the stronger your application.</p>
+      </div>
+      <div class="criteria-card">
+        <div class="criteria-num">04</div>
+        <h3>Excited to build community</h3>
+        <p>Grant recipients become part of something bigger — a network of dreamers who are running toward something real.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section style="background:var(--snow);padding:5rem 2rem;">
+  <div class="section-inner">
+    <div class="section-header">
+      <p class="section-eyebrow">How It Works</p>
+      <h2>More than grants. A movement.</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:3rem;max-width:900px;margin:3rem auto 0;">
+      <div>
+        <h3 style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:0.8rem;">Milestone support</h3>
+        <p style="font-size:0.95rem;font-weight:300;color:var(--text-lt);line-height:1.8;margin-bottom:2rem;">If you demonstrate meaningful progress after a set period, you're eligible for a second grant. Because sometimes momentum compounds.</p>
+        <h3 style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:0.8rem;">Community of dreamers</h3>
+        <p style="font-size:0.95rem;font-weight:300;color:var(--text-lt);line-height:1.8;">Past recipients become part of something bigger — contributing support and guidance to new applicants.</p>
+      </div>
+      <div>
+        <h3 style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:0.8rem;">Guidance &amp; advice</h3>
+        <p style="font-size:0.95rem;font-weight:300;color:var(--text-lt);line-height:1.8;margin-bottom:2rem;">Alongside the grant comes real mentorship — people who've been where you are, willing to help you move forward.</p>
+        <h3 style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:0.8rem;">The evergreen vision</h3>
+        <p style="font-size:0.95rem;font-weight:300;color:var(--text-lt);line-height:1.8;">Those who succeed eventually give back, keeping the cycle alive for future dreamers. What begins as a gift becomes a movement.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ASSESSMENT -->
+<section class="assessment" id="assessment">
+  <div class="section-inner">
+    <div class="section-header">
+      <p class="section-eyebrow">Step One — Assessment</p>
+      <h2>Tell us your story</h2>
+      <p>There are no right answers. We read for honesty, specificity, and the unmistakable sign that you've already started. Strong responses receive an invitation to apply for a $5,000 grant.</p>
+    </div>
+    <div class="assessment-cards">
+      <div class="a-card">
+        <div class="a-card-label">What's your dream</div>
+        <p>Tell us what you're chasing — and what the practice looks like on an ordinary Tuesday.</p>
+      </div>
+      <div class="a-card">
+        <div class="a-card-label">What are you already doing</div>
+        <p>Show us you're showing up — unpaid and unasked. This is the question that matters most.</p>
+      </div>
+      <div class="a-card">
+        <div class="a-card-label">What does $5K unlock</div>
+        <p>Be specific. The clearer your answer, the stronger your application.</p>
+      </div>
+    </div>
+    <div class="assessment-cta">
+      <button class="btn-gold" onclick="openModal()" style="font-size:1rem;padding:1.1rem 2.75rem;">Begin the Assessment →</button>
+      <p>5 questions · takes about 10 minutes · we read every response</p>
+    </div>
+  </div>
+</section>
+
+<!-- BOOK -->
+<section class="about-book">
+  <div class="book-split">
+    <div class="book-cover-wrap">
+      <img src="/runnin-down-a-dream-cover.jpg" alt="Runnin' Down a Dream - Bill Gurley" loading="lazy">
+    </div>
+    <div class="book-content">
+      <p class="section-eyebrow">The Book Behind the Foundation</p>
+      <h2>Runnin' Down a Dream<br>by Bill Gurley</h2>
+      <p>Based on a talk at the McCombs School at the University of Texas, <em>Runnin' Down a Dream</em> captures the insight that has shaped careers and companies: the people who succeed most tend to love what they do so much that they'd do it for free.</p>
+      <p>This foundation exists to give that thesis a runway — for the people who've found their dream but haven't yet found their break.</p>
+      <a href="https://amzn.to/4tXCLbe" target="_blank" rel="noopener">Get the Book →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div style="text-align:center;">
+    <p style="margin-bottom:0.5rem;">The Runnin' Down a Dream Foundation &nbsp;·&nbsp; Micro-grants for people chasing something real.</p>
+    <p style="margin-bottom:2rem;"><a href="https://rdad.org" target="_blank" rel="noopener">rdad.org</a> &nbsp;·&nbsp; <a href="mailto:grants@rdad.org">grants@rdad.org</a></p>
+    <p style="margin-bottom:1rem;font-size:0.75rem;color:rgba(255,255,255,0.2);">Built on Cloudflare Pages + D1 + Workers · Powered by edge infrastructure</p>
+    <p style="font-size:0.75rem;">Built in the spirit of the book.</p>
+  </div>
+</footer>
+
+<!-- ASSESSMENT MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeOnBackdrop(event)">
+  <div class="modal" id="modalBox">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-progress" id="modalProgress"></div>
+    <div id="modalError"></div>
+
+    <!-- Step 0: Name + Email -->
+    <div class="modal-step active" id="step-0">
+      <div class="modal-q-label">Let's get started</div>
+      <div class="modal-q-text">First, tell us a little about you.</div>
+      <div class="modal-q-hint">This is how we'll reach out if your application moves forward.</div>
+      <input class="modal-input" type="text" id="inp-name" placeholder="Your full name" style="margin-bottom:0.75rem;">
+      <input class="modal-input" type="email" id="inp-email" placeholder="Your email address">
+      <div class="modal-nav">
+        <span class="modal-step-counter">Step 1 of 6</span>
+        <button class="modal-next" onclick="nextStep(0)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="modal-step" id="step-1">
+      <div class="modal-q-label">Question 1 of 5</div>
+      <div class="modal-q-text">What's your dream?</div>
+      <div class="modal-q-hint">Describe it in one sentence — then describe what the <em>practice</em> looks like on a Tuesday morning.</div>
+      <textarea class="modal-input" id="inp-dream" rows="5" placeholder="My dream is... On a Tuesday morning I..."></textarea>
+      <div class="modal-nav">
+        <button class="modal-back" onclick="prevStep(1)">← Back</button>
+        <span class="modal-step-counter">Step 2 of 6</span>
+        <button class="modal-next" onclick="nextStep(1)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="modal-step" id="step-2">
+      <div class="modal-q-label">Question 2 of 5</div>
+      <div class="modal-q-text">What did you do this week — unpaid and unasked — in the direction of your dream?</div>
+      <div class="modal-q-hint">Be specific. This is the question that separates dreamers from doers.</div>
+      <textarea class="modal-input" id="inp-momentum" rows="5" placeholder="This week I..."></textarea>
+      <div class="modal-nav">
+        <button class="modal-back" onclick="prevStep(2)">← Back</button>
+        <span class="modal-step-counter">Step 3 of 6</span>
+        <button class="modal-next" onclick="nextStep(2)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="modal-step" id="step-3">
+      <div class="modal-q-label">Question 3 of 5</div>
+      <div class="modal-q-text">What's the financial obstacle standing between you and the next step?</div>
+      <div class="modal-q-hint">How would $5,000 change the equation? The more specific, the stronger your application.</div>
+      <textarea class="modal-input" id="inp-impact" rows="5" placeholder="The obstacle is... $5,000 would let me..."></textarea>
+      <div class="modal-nav">
+        <button class="modal-back" onclick="prevStep(3)">← Back</button>
+        <span class="modal-step-counter">Step 4 of 6</span>
+        <button class="modal-next" onclick="nextStep(3)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="modal-step" id="step-4">
+      <div class="modal-q-label">Question 4 of 5</div>
+      <div class="modal-q-text">Did you read the book?</div>
+      <div class="modal-q-hint">If so, what moment hit you hardest — and why? (Not required, but a strong signal.)</div>
+      <textarea class="modal-input" id="inp-book" rows="5" placeholder="The part that hit me was..."></textarea>
+      <div class="modal-nav">
+        <button class="modal-back" onclick="prevStep(4)">← Back</button>
+        <span class="modal-step-counter">Step 5 of 6</span>
+        <button class="modal-next" onclick="nextStep(4)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="modal-step" id="step-5">
+      <div class="modal-q-label">Question 5 of 5</div>
+      <div class="modal-q-text">How did you find us?</div>
+      <div class="modal-q-hint">Word of mouth, social media, the book, an event?</div>
+      <textarea class="modal-input" id="inp-timeline" rows="4" placeholder="How did you find out about RDAD?"></textarea>
+      <div class="modal-nav">
+        <button class="modal-back" onclick="prevStep(5)">← Back</button>
+        <span class="modal-step-counter">Step 6 of 6</span>
+        <button class="modal-next" id="submitBtn" onclick="submitAssessment()">Submit →</button>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div id="modalSuccess" style="display:none;">
+      <h3>✓ We got it.</h3>
+      <p>We read every response personally. If your application is a strong fit, we'll be in touch within 2–3 weeks.<br><br>Thank you for sharing your story. Keep chasing it.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+var currentStep = 0;
+var totalSteps = 6;
+
+function buildPips() {
+  var prog = document.getElementById('modalProgress');
+  prog.innerHTML = '';
+  for (var i = 0; i < totalSteps; i++) {
+    var pip = document.createElement('div');
+    pip.className = 'modal-pip' + (i < currentStep ? ' done' : i === currentStep ? ' active' : '');
+    prog.appendChild(pip);
+  }
+}
+
+function openModal() {
+  currentStep = 0;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.querySelectorAll('.modal-step').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById('step-0').classList.add('active');
+  document.getElementById('modalSuccess').style.display = 'none';
+  document.getElementById('modalProgress').style.display = 'flex';
+  document.getElementById('modalError').style.display = 'none';
+  buildPips();
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeOnBackdrop(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function showStep(n) {
+  document.querySelectorAll('.modal-step').forEach(function(s){ s.classList.remove('active'); });
+  var el = document.getElementById('step-' + n);
+  if (el) el.classList.add('active');
+  buildPips();
+}
+
+function nextStep(n) {
+  if (n === 0) {
+    if (!document.getElementById('inp-name').value.trim()) { alert('Please enter your name.'); return; }
+    if (!document.getElementById('inp-email').value.trim()) { alert('Please enter your email.'); return; }
+  }
+  currentStep = n + 1;
+  showStep(n + 1);
+}
+
+function prevStep(n) {
+  currentStep = n - 1;
+  showStep(n - 1);
+}
+
+async function submitAssessment() {
+  var btn = document.getElementById('submitBtn');
+  var errEl = document.getElementById('modalError');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+  errEl.style.display = 'none';
+
+  var data = {
+    name:     document.getElementById('inp-name').value.trim(),
+    email:    document.getElementById('inp-email').value.trim(),
+    dream:    document.getElementById('inp-dream').value.trim(),
+    momentum: document.getElementById('inp-momentum').value.trim(),
+    impact:   document.getElementById('inp-impact').value.trim(),
+    timeline: document.getElementById('inp-timeline').value.trim()
+  };
+
+  try {
+    var resp = await fetch('/api/assessment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (resp.ok) {
+      document.querySelectorAll('.modal-step').forEach(function(s){ s.style.display = 'none'; });
+      document.getElementById('modalProgress').style.display = 'none';
+      document.getElementById('modalSuccess').style.display = 'block';
+    } else {
+      var err = await resp.json().catch(function(){ return {}; });
+      errEl.textContent = err.error || 'Something went wrong. Please try again.';
+      errEl.style.display = 'block';
+      btn.textContent = 'Submit →';
+      btn.disabled = false;
+    }
+  } catch (e) {
+    errEl.textContent = 'Network error — please check your connection and try again.';
+    errEl.style.display = 'block';
+    btn.textContent = 'Submit →';
+    btn.disabled = false;
+  }
+}
+
+function toggleDropdown(e, id) {
+  e.preventDefault();
+  document.querySelectorAll('.nav-dropdown').forEach(function(dd) {
+    if (dd.id !== id) dd.classList.remove('open');
+  });
+  var dd = document.getElementById(id);
+  if (dd) dd.classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  document.querySelectorAll('.nav-dropdown').forEach(function(dd) {
+    if (!dd.contains(e.target)) dd.classList.remove('open');
+  });
+});
+</script>
+
+</body>
+</html>

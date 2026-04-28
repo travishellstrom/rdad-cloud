@@ -1,0 +1,11 @@
+name = "rdad-cloud"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "RDAD_DB"
+database_name = "rdad_cloud_db"
+database_id = "PLACEHOLDER_REPLACE_AFTER_CREATION"
+
+[vars]
+SITE_URL = "https://cloud.rdad.org"

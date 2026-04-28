@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — RDAD Foundation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue-dk: #0A1628; --blue-mid: #1A3A5C; --blue-lt: #2A5A8C;
+      --gold: #E8A020; --gold-lt: #F5C352;
+      --white: #FFFFFF; --snow: #F8F7F4; --text: #111111; --text-lt: #555555; --border: #E0DED8;
+      --green: #16a34a; --red: #dc2626;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Poppins', sans-serif; font-weight: 300; background: var(--snow); color: var(--text); min-height: 100vh; }
+
+    /* NAV */
+    nav { background: var(--blue-dk); padding: 0 2rem; height: 56px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--gold); }
+    .nav-brand { font-size: 0.85rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.9); text-decoration: none; }
+    .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+    .nav-badge { background: rgba(232,160,32,0.15); border: 1px solid rgba(232,160,32,0.3); color: var(--gold); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.25rem 0.6rem; border-radius: 3px; }
+    .nav-logout { background: none; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.6); font-family: inherit; font-size: 0.78rem; padding: 0.4rem 1rem; border-radius: 3px; cursor: pointer; transition: all 0.2s; }
+    .nav-logout:hover { border-color: rgba(255,255,255,0.5); color: var(--white); }
+
+    /* CONTENT */
+    .content { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem; }
+
+    /* LOGIN */
+    #loginScreen { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 56px); }
+    .login-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 2.5rem; width: 100%; max-width: 400px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); text-align: center; }
+    .login-card h2 { font-size: 1.2rem; font-weight: 700; color: var(--blue-mid); margin-bottom: 0.5rem; }
+    .login-card p { font-size: 0.85rem; color: var(--text-lt); margin-bottom: 1.75rem; }
+    .login-input {
+      width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 0.85rem 1rem;
+      font-family: inherit; font-size: 0.92rem; color: var(--text); outline: none; transition: border-color 0.2s;
+      margin-bottom: 1rem; background: var(--snow);
+    }
+    .login-input:focus { border-color: var(--blue-mid); }
+    .btn-primary {
+      width: 100%; background: var(--gold); color: var(--blue-dk); border: none; padding: 0.9rem 1.5rem;
+      font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; border-radius: 6px; transition: background 0.2s;
+    }
+    .btn-primary:hover { background: var(--gold-lt); }
+    .login-error { color: var(--red); font-size: 0.82rem; margin-top: 0.75rem; }
+
+    /* STATS */
+    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.25rem; margin-bottom: 2rem; }
+    .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; }
+    .stat-card .num { font-size: 2rem; font-weight: 800; color: var(--blue-mid); line-height: 1; margin-bottom: 0.25rem; }
+    .stat-card .lbl { font-size: 0.75rem; font-weight: 500; color: var(--text-lt); letter-spacing: 0.08em; text-transform: uppercase; }
+    .stat-card.gold .num { color: var(--gold); }
+    .stat-card.green .num { color: var(--green); }
+    .stat-card.red .num { color: var(--red); }
+
+    /* TABLE */
+    .table-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .table-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .table-header h3 { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .refresh-btn { background: none; border: 1px solid var(--border); padding: 0.4rem 1rem; font-family: inherit; font-size: 0.78rem; color: var(--text-lt); border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+    .refresh-btn:hover { border-color: var(--blue-mid); color: var(--blue-mid); }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--snow); }
+    th { padding: 0.75rem 1.25rem; font-size: 0.72rem; font-weight: 700; color: var(--text-lt); letter-spacing: 0.08em; text-transform: uppercase; text-align: left; border-bottom: 1px solid var(--border); }
+    td { padding: 1rem 1.25rem; font-size: 0.88rem; font-weight: 300; color: var(--text); border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr { cursor: pointer; transition: background 0.15s; }
+    tbody tr:hover { background: var(--snow); }
+    tbody tr.expanded { background: #f0f4f8; }
+
+    /* STATUS BADGES */
+    .badge { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.65rem; border-radius: 3px; }
+    .badge-pending { background: rgba(232,160,32,0.15); color: #b37800; }
+    .badge-invited { background: rgba(22,163,74,0.12); color: var(--green); }
+    .badge-rejected { background: rgba(220,38,38,0.1); color: var(--red); }
+
+    /* DETAIL PANEL */
+    .detail-row { display: none; }
+    .detail-row.open { display: table-row; }
+    .detail-panel { padding: 1.5rem 1.5rem 2rem; background: #f7fafc; border-top: 2px solid var(--gold); }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .detail-q { margin-bottom: 1rem; }
+    .detail-q label { display: block; font-size: 0.72rem; font-weight: 700; color: var(--text-lt); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4rem; }
+    .detail-q p { font-size: 0.88rem; font-weight: 300; color: var(--text); line-height: 1.75; background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem 1rem; }
+    .detail-actions { display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+    .action-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .action-group label { font-size: 0.72rem; font-weight: 700; color: var(--text-lt); letter-spacing: 0.08em; text-transform: uppercase; }
+    .action-select { border: 1px solid var(--border); border-radius: 4px; padding: 0.5rem 0.75rem; font-family: inherit; font-size: 0.88rem; color: var(--text); background: var(--white); outline: none; }
+    .action-select:focus { border-color: var(--blue-mid); }
+    .notes-input { border: 1px solid var(--border); border-radius: 4px; padding: 0.5rem 0.75rem; font-family: inherit; font-size: 0.85rem; color: var(--text); background: var(--white); outline: none; resize: vertical; min-width: 300px; }
+    .notes-input:focus { border-color: var(--blue-mid); }
+    .btn-save { background: var(--blue-mid); color: var(--white); border: none; padding: 0.55rem 1.5rem; font-family: inherit; font-size: 0.82rem; font-weight: 600; cursor: pointer; border-radius: 4px; transition: background 0.2s; align-self: flex-end; }
+    .btn-save:hover { background: var(--blue-lt); }
+    .btn-delete { background: none; border: 1px solid rgba(220,38,38,0.3); color: var(--red); padding: 0.55rem 1.25rem; font-family: inherit; font-size: 0.82rem; cursor: pointer; border-radius: 4px; transition: all 0.2s; align-self: flex-end; }
+    .btn-delete:hover { background: rgba(220,38,38,0.08); border-color: var(--red); }
+    .save-msg { font-size: 0.78rem; color: var(--green); align-self: flex-end; opacity: 0; transition: opacity 0.3s; }
+    .save-msg.show { opacity: 1; }
+
+    /* LOADING / EMPTY */
+    .loading { text-align: center; padding: 4rem; color: var(--text-lt); font-size: 0.9rem; }
+    .empty { text-align: center; padding: 4rem; color: var(--text-lt); }
+    .empty p { font-size: 1rem; margin-bottom: 0.5rem; }
+    .empty small { font-size: 0.82rem; color: var(--border); }
+
+    @media (max-width: 640px) {
+      .stats-row { grid-template-columns: repeat(2,1fr); }
+      .detail-grid { grid-template-columns: 1fr; }
+      .detail-actions { flex-direction: column; }
+      .notes-input { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">RDAD Foundation</a>
+  <div class="nav-right">
+    <span class="nav-badge" id="navBadge" style="display:none;">Admin</span>
+    <button class="nav-logout" id="logoutBtn" style="display:none;" onclick="logout()">Log Out</button>
+  </div>
+</nav>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <h2>Admin Access</h2>
+    <p>Enter your admin token to view submissions.</p>
+    <input class="login-input" type="password" id="tokenInput" placeholder="Admin token" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn-primary" onclick="doLogin()">Sign In</button>
+    <p class="login-error" id="loginError" style="display:none;">Invalid token. Try again.</p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" style="display:none;">
+  <div class="content">
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="num" id="statTotal">—</div><div class="lbl">Total</div></div>
+      <div class="stat-card gold"><div class="num" id="statPending">—</div><div class="lbl">Pending</div></div>
+      <div class="stat-card green"><div class="num" id="statInvited">—</div><div class="lbl">Invited</div></div>
+      <div class="stat-card red"><div class="num" id="statRejected">—</div><div class="lbl">Rejected</div></div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <div class="table-header">
+        <h3>Submissions</h3>
+        <button class="refresh-btn" onclick="loadSubmissions()">↻ Refresh</button>
+      </div>
+      <div id="tableBody">
+        <div class="loading">Loading submissions...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var TOKEN_KEY = 'rdad_admin_token';
+var submissions = [];
+var expandedId = null;
+
+function getToken() { return localStorage.getItem(TOKEN_KEY); }
+function logout() {
+  localStorage.removeItem(TOKEN_KEY);
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('navBadge').style.display = 'none';
+}
+
+function doLogin() {
+  var token = document.getElementById('tokenInput').value.trim();
+  if (!token) return;
+  localStorage.setItem(TOKEN_KEY, token);
+  document.getElementById('loginError').style.display = 'none';
+  checkAndLoad(token);
+}
+
+async function checkAndLoad(token) {
+  try {
+    var resp = await fetch('/api/submissions', {
+      headers: { 'X-Admin-Token': token }
+    });
+    if (resp.status === 401) {
+      localStorage.removeItem(TOKEN_KEY);
+      document.getElementById('loginError').style.display = 'block';
+      return;
+    }
+    submissions = await resp.json();
+    showDashboard();
+  } catch (e) {
+    document.getElementById('loginError').textContent = 'Network error. Check console.';
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function showDashboard() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('logoutBtn').style.display = 'inline-block';
+  document.getElementById('navBadge').style.display = 'inline-block';
+  renderStats();
+  renderTable();
+}
+
+function renderStats() {
+  var total = submissions.length;
+  var pending = submissions.filter(function(s){ return s.status === 'pending'; }).length;
+  var invited = submissions.filter(function(s){ return s.status === 'invited'; }).length;
+  var rejected = submissions.filter(function(s){ return s.status === 'rejected'; }).length;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statPending').textContent = pending;
+  document.getElementById('statInvited').textContent = invited;
+  document.getElementById('statRejected').textContent = rejected;
+}
+
+function badgeHtml(status) {
+  var cls = status === 'invited' ? 'badge-invited' : status === 'rejected' ? 'badge-rejected' : 'badge-pending';
+  return '<span class="badge ' + cls + '">' + status + '</span>';
+}
+
+function truncate(str, n) {
+  if (!str) return '<span style="color:#bbb;">—</span>';
+  return str.length > n ? str.substring(0, n) + '…' : str;
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  var d = new Date(iso);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function renderTable() {
+  var el = document.getElementById('tableBody');
+  if (!submissions.length) {
+    el.innerHTML = '<div class="empty"><p>No submissions yet.</p><small>Assessments will appear here once people apply.</small></div>';
+    return;
+  }
+  var html = '<table><thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Submitted</th><th>Dream</th></tr></thead><tbody id="tBody"></tbody></table>';
+  el.innerHTML = html;
+  var tbody = document.getElementById('tBody');
+  submissions.forEach(function(s) {
+    var tr = document.createElement('tr');
+    tr.dataset.id = s.id;
+    tr.innerHTML =
+      '<td><strong>' + escHtml(s.name) + '</strong></td>' +
+      '<td><a href="mailto:' + escHtml(s.email) + '" onclick="event.stopPropagation()" style="color:var(--blue-mid);">' + escHtml(s.email) + '</a></td>' +
+      '<td>' + badgeHtml(s.status) + '</td>' +
+      '<td style="white-space:nowrap;">' + fmtDate(s.created_at) + '</td>' +
+      '<td style="color:var(--text-lt);">' + truncate(s.dream, 80) + '</td>';
+    tr.onclick = function() { toggleDetail(s.id); };
+    tbody.appendChild(tr);
+
+    // Detail row
+    var dr = document.createElement('tr');
+    dr.className = 'detail-row';
+    dr.id = 'detail-' + s.id;
+    var td = document.createElement('td');
+    td.colSpan = 5;
+    td.innerHTML = buildDetailPanel(s);
+    dr.appendChild(td);
+    tbody.appendChild(dr);
+  });
+}
+
+function buildDetailPanel(s) {
+  return '<div class="detail-panel">' +
+    '<div class="detail-grid">' +
+      '<div>' +
+        detailQ('Dream', s.dream) +
+        detailQ('Momentum (unpaid &amp; unasked)', s.momentum) +
+      '</div>' +
+      '<div>' +
+        detailQ('Financial obstacle / $5K impact', s.impact) +
+        detailQ('How they found us / timeline', s.timeline) +
+      '</div>' +
+    '</div>' +
+    '<div class="detail-actions">' +
+      '<div class="action-group"><label>Status</label>' +
+        '<select class="action-select" id="status-' + s.id + '">' +
+          optionHtml(s.status, 'pending', 'Pending') +
+          optionHtml(s.status, 'invited', 'Invited') +
+          optionHtml(s.status, 'rejected', 'Rejected') +
+        '</select>' +
+      '</div>' +
+      '<div class="action-group"><label>Notes</label>' +
+        '<textarea class="notes-input" id="notes-' + s.id + '" rows="3" placeholder="Internal notes...">' + escHtml(s.notes || '') + '</textarea>' +
+      '</div>' +
+      '<button class="btn-save" onclick="saveSubmission(\'' + s.id + '\',event)">Save</button>' +
+      '<span class="save-msg" id="savemsg-' + s.id + '">✓ Saved</span>' +
+      '<button class="btn-delete" onclick="deleteSubmission(\'' + s.id + '\',event)">Delete</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function detailQ(label, val) {
+  return '<div class="detail-q"><label>' + label + '</label><p>' + escHtml(val || '—') + '</p></div>';
+}
+
+function optionHtml(current, val, label) {
+  return '<option value="' + val + '"' + (current === val ? ' selected' : '') + '>' + label + '</option>';
+}
+
+function toggleDetail(id) {
+  var dr = document.getElementById('detail-' + id);
+  var tr = dr.previousElementSibling;
+  if (expandedId && expandedId !== id) {
+    var old = document.getElementById('detail-' + expandedId);
+    if (old) { old.classList.remove('open'); old.previousElementSibling.classList.remove('expanded'); }
+  }
+  dr.classList.toggle('open');
+  tr.classList.toggle('expanded');
+  expandedId = dr.classList.contains('open') ? id : null;
+}
+
+async function saveSubmission(id, e) {
+  e.stopPropagation();
+  var status = document.getElementById('status-' + id).value;
+  var notes = document.getElementById('notes-' + id).value;
+  var token = getToken();
+  try {
+    var resp = await fetch('/api/submissions/' + id, {
+      method: 'PATCH',
+      headers: { 'X-Admin-Token': token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: status, notes: notes })
+    });
+    if (resp.ok) {
+      // Update local data
+      var s = submissions.find(function(x){ return x.id === id; });
+      if (s) { s.status = status; s.notes = notes; }
+      renderStats();
+      // Update badge in table row
+      var tr = document.getElementById('detail-' + id).previousElementSibling;
+      var badgeTd = tr.cells[2];
+      if (badgeTd) badgeTd.innerHTML = badgeHtml(status);
+      var msg = document.getElementById('savemsg-' + id);
+      msg.classList.add('show');
+      setTimeout(function(){ msg.classList.remove('show'); }, 2000);
+    }
+  } catch(err) { alert('Save failed: ' + err.message); }
+}
+
+async function deleteSubmission(id, e) {
+  e.stopPropagation();
+  if (!confirm('Delete this submission? This cannot be undone.')) return;
+  var token = getToken();
+  try {
+    var resp = await fetch('/api/submissions/' + id, {
+      method: 'DELETE',
+      headers: { 'X-Admin-Token': token }
+    });
+    if (resp.ok) {
+      submissions = submissions.filter(function(s){ return s.id !== id; });
+      renderStats();
+      renderTable();
+    }
+  } catch(err) { alert('Delete failed: ' + err.message); }
+}
+
+async function loadSubmissions() {
+  var token = getToken();
+  if (!token) return;
+  document.getElementById('tableBody').innerHTML = '<div class="loading">Loading...</div>';
+  try {
+    var resp = await fetch('/api/submissions', { headers: { 'X-Admin-Token': token } });
+    if (resp.status === 401) { logout(); return; }
+    submissions = await resp.json();
+    renderStats();
+    renderTable();
+  } catch(e) { document.getElementById('tableBody').innerHTML = '<div class="loading">Failed to load. Try refreshing.</div>'; }
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Auto-login if token exists
+(function init() {
+  var token = getToken();
+  if (token) { checkAndLoad(token); }
+})();
+</script>
+
+</body>
+</html>
